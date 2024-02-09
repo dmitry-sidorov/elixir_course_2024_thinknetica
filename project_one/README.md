@@ -1,7 +1,4 @@
 # Homework 01
- - Create a simple project from scratch, like a calculator.
- - Make tests and documentation for the project.
- - Solve some katas on exircism.io.
 
  ## Chmod calculator in octal
  Lot of junior developer can be stuck when they need to change the access permission to a file or a directory in an Unix-like operating systems.
