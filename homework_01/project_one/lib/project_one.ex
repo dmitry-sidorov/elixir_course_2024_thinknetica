@@ -20,11 +20,13 @@ defmodule ProjectOne do
   end
 
   defp calculate_permission(nil), do: "0"
+
   defp calculate_permission(code) do
-    {num, _} = code
-    |> String.replace(~r/\w/, "1")
-    |> String.replace(~r/-/, "0")
-    |> Integer.parse(2)
+    {num, _} =
+      code
+      |> String.replace(~r/\w/, "1")
+      |> String.replace(~r/-/, "0")
+      |> Integer.parse(2)
 
     num
   end
