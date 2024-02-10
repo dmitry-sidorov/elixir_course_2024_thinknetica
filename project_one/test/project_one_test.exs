@@ -23,4 +23,16 @@ defmodule ProjectOneTest do
       ProjectOne.calculate_chmod("not map value")
     end
   end
+
+  test "raises exception for wrong not allowed chars in map" do
+    assert_raise BadMapError, fn ->
+      ProjectOne.calculate_chmod(%{ user: "kjf"})
+    end
+  end
+
+  test "raises exception for wrong length of chars in map" do
+    assert_raise BadMapError, fn ->
+      ProjectOne.calculate_chmod(%{ user: "rwxwr"})
+    end
+  end
 end
