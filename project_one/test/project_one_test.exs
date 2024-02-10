@@ -25,14 +25,20 @@ defmodule ProjectOneTest do
   end
 
   test "raises exception for wrong not allowed chars in map" do
-    assert_raise BadMapError, fn ->
-      ProjectOne.calculate_chmod(%{ user: "kjf"})
+    assert_raise RuntimeError, "Char is not allowed! (r, w, x, -)", fn ->
+      ProjectOne.calculate_chmod(%{user: "kjf"})
     end
   end
 
   test "raises exception for wrong length of chars in map" do
-    assert_raise BadMapError, fn ->
-      ProjectOne.calculate_chmod(%{ user: "rwxwr"})
+    assert_raise RuntimeError, "Wrong length of charset (should be 3)", fn ->
+      ProjectOne.calculate_chmod(%{user: "rwxwr"})
+    end
+  end
+
+  test "raises exception for wrong code type" do
+    assert_raise FunctionClauseError, fn ->
+      ProjectOne.calculate_chmod(%{user: 123})
     end
   end
 end
