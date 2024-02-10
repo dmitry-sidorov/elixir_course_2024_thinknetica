@@ -16,7 +16,9 @@ defmodule ProjectOne do
     user = Map.get(perm, :user)
     group = Map.get(perm, :group)
     other = Map.get(perm, :other)
-    "#{calculate_permission(user)}#{calculate_permission(group)}#{calculate_permission(other)}"
+    [user, group, other]
+    |> Enum.map(&calculate_permission/1)
+    |> Enum.join()
   end
 
   defp calculate_permission(nil), do: "0"
