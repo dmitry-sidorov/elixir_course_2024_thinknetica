@@ -46,8 +46,8 @@ defmodule ProjectOne do
 
   defp parse_grapheme(grapheme) do
     cond do
-      grapheme |> String.match?(~r/r|w|x/) -> "1"
-      grapheme |> String.match?(~r/-/) -> "0"
+      grapheme in ["r", "w", "x"] -> "1"
+      grapheme == "-" -> "0"
       true -> raise "Char is not allowed! (r, w, x, -)"
     end
   end
