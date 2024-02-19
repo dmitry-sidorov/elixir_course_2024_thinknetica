@@ -26,7 +26,6 @@ defmodule EchoServer do
       :ping -> GenServer.call(pid, message)
       _ -> raise "Only :ping message is allowed!"
     end
-
   end
 
   # Server (callbacks)

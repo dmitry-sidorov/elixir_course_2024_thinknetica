@@ -9,6 +9,9 @@ defmodule EchoServerTest do
 
   test "throw error" do
     {:ok, pid} = EchoServer.start_link()
-    assert_raise RuntimeError,  "Only :ping message is allowed!", fn -> EchoServer.echo(pid, :some) == {:pong, :nonode@nohost} end
+
+    assert_raise RuntimeError, "Only :ping message is allowed!", fn ->
+      EchoServer.echo(pid, :some) == {:pong, :nonode@nohost}
+    end
   end
 end
