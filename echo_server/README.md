@@ -1,6 +1,13 @@
 # EchoServer
 
-**TODO: Add description**
+## Homework 02
+Echo module, which recieves :ping atom as a message and returns {:pong, node()} tuple.
+
+```elixir
+iex> {:ok, pid} = EchoServer.start_link()
+iex> EchoServer.echo(pid, :ping)
+{:pong, :nonode@nohost}
+```
 
 ## Installation
 

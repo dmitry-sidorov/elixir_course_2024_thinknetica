@@ -6,7 +6,7 @@ defmodule EchoServer do
   """
 
   @doc """
-  Hello world.
+  Ping-pong.
 
   ## Examples
       iex> {:ok, pid} = EchoServer.start_link()
