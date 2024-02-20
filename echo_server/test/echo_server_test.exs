@@ -13,5 +13,13 @@ defmodule EchoServerTest do
     assert_raise RuntimeError, "Only :ping message is allowed!", fn ->
       EchoServer.echo(pid, :some) == {:pong, :nonode@nohost}
     end
+
+    assert_raise RuntimeError, "Only :ping message is allowed!", fn ->
+      EchoServer.echo(pid, %{}) == {:pong, :nonode@nohost}
+    end
+
+    assert_raise RuntimeError, "Only :ping message is allowed!", fn ->
+      EchoServer.echo(pid, "ping") == {:pong, :nonode@nohost}
+    end
   end
 end
