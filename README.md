@@ -7,3 +7,8 @@
  - Create a simple project from scratch, like a calculator. [Chmod calculator](https://github.com/dmitry-sidorov/elixir_course_2024_thinknetica/tree/homework_01/create-mix-project/project_one)
  - Make tests and documentation for the project.
  - Solve some katas on exircism.io. [See exircism profile](https://exercism.org/profiles/dmitry-sidorov/solutions?track_slug=elixir)
+
+## Homework 02
+ - Write an echo module, which recieves :ping atom as a message and returns {:pong, node()} tuple.
+ - Write unit tests.
+ 
