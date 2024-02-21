@@ -22,7 +22,7 @@ defmodule EchoServer do
   end
 
   def echo(pid, :ping) do
-    GenServer.call(pid, message)
+    GenServer.call(pid, :ping)
   end
 
   # Server (callbacks)
