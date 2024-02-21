@@ -21,11 +21,8 @@ defmodule EchoServer do
     GenServer.start_link(__MODULE__, default)
   end
 
-  def echo(pid, message) do
-    case message do
-      :ping -> GenServer.call(pid, message)
-      _ -> raise "Only :ping message is allowed!"
-    end
+  def echo(pid, :ping) do
+    GenServer.call(pid, message)
   end
 
   # Server (callbacks)
