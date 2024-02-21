@@ -13,7 +13,7 @@ defmodule EchoServerTest do
   test "throw error for wrong arguments" do
     {:ok, pid} = EchoServer.start_link()
 
-    for wrong_message <- [:some, %{}, "ping", 'ping', [], {:ping, "message"}] do
+    for wrong_message <- [:some, %{}, "ping", ~c"ping", [], {:ping, "message"}] do
       assert_raise FunctionClauseError, @error_message, fn ->
         EchoServer.echo(pid, wrong_message)
       end
