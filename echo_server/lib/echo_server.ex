@@ -33,7 +33,8 @@ defmodule EchoServer do
   end
 
   @impl true
-  def handle_call(:ping, _from, state) do
+  def handle_call(:ping, {pid, _ref}, state) do
+    send(pid, {:pong, node()})
     {:reply, {:pong, node()}, state}
   end
 end
