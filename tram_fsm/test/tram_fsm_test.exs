@@ -39,4 +39,26 @@ defmodule TramFsmTest do
       assert warning == "tram is already in required state #{to}"
     end
   end
+
+  invalid_transitions = StreamData.string(?a..?z, min_length: 2, max_length: 50) |> Enum.take(100)
+  current_transition = transitions |> Enum.fetch!(1)
+
+  for invalid_transition <- invalid_transitions do
+    @tag invalid_transition: invalid_transition
+    @tag current_transition: current_transition
+    test "Test invalid transition #{invalid_transition}", %{
+      invalid_transition: invalid_transition,
+      current_transition: current_transition
+    } do
+      {transition, %{from: from}} = current_transition
+      {:ok, pid} = TramFsm.start_link(%{tram_state: from})
+
+      {:error, message, info} = TramFsm.transition(pid, invalid_transition)
+      {:info, %{current_state: new_state}} = TramFsm.info(pid)
+
+      assert new_state == from, "should not change state"
+      assert message == "transition doesn't exist"
+      assert info == %{current_state: from, available_transitions: [transition]}
+    end
+  end
 end
