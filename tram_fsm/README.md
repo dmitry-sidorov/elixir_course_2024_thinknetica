@@ -20,10 +20,10 @@ flowchart TD
   Move_to_station ---> |traffic light red| Stop_by_traffic_light
   Stop_by_traffic_light ---> |traffic light green| Move_to_station
   Move_to_station ---> |unexpected accident happened| Stop_by_accident
-  Stop_by_accident ---> |open the doors| Emergency_doors_opening
+  Stop_by_accident ---> |open the doors emergency Emergency_doors_opening
   Emergency_doors_opening --->|start rescue passengers| Rescue_passengers
   Rescue_passengers ---> |stop rescue passengers| Emergency_doors_opening
-  Emergency_doors_opening ---> |close the doors| Stop_by_accident
+  Emergency_doors_opening ---> |close the doors emergency| Stop_by_accident
   Stop_by_accident ---> |move to service station| Service
   Service ---> |back to depot| Depot
 ```
