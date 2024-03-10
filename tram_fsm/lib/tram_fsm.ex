@@ -23,7 +23,7 @@ defmodule TramFsm do
       from: :emergency_doors_opening,
       to: :rescue_passengers
     },
-    "start_rescue_passengers" => %{
+    "stop_rescue_passengers" => %{
       from: :rescue_passengers,
       to: :emergency_doors_opening
     },
@@ -46,10 +46,16 @@ defmodule TramFsm do
       iex> {:ok, pid} = TramFsm.start_link()
       iex> TramFsm.info(pid)
       {:info, %{current_state: :depot, available_transitions: ["start_the_route"]}}
-
+      iex> TramFsm.transition(pid, "start_the_route")
+      {:ok, %{tram_state: :move_to_station}}
   """
   def start_link(default \\ %{tram_state: :depot}) do
     GenServer.start_link(__MODULE__, default)
+  end
+
+  @impl true
+  def init(args) do
+    {:ok, args}
   end
 
   def info(pid) do
@@ -60,12 +66,7 @@ defmodule TramFsm do
     @transition_scheme
   end
 
-  @impl true
-  def handle_call(:info, {pid, _ref}, state) do
-    {:reply, {:info, get_info(state)}, state}
-  end
-
-  defp get_available_transitions(%{tram_state: current_state} = state) do
+  defp get_available_transitions(%{tram_state: current_state}) do
     @transition_scheme
     |> Map.to_list()
     |> Enum.filter(fn {_transition, %{from: from}} -> from == current_state end)
@@ -91,14 +92,19 @@ defmodule TramFsm do
   end
 
   @impl true
-  def handle_call({:transition, %{from: from, to: to}}, {pid, _ref}, state)
+  def handle_call(:info, _, state) do
+    {:reply, {:info, get_info(state)}, state}
+  end
+
+  @impl true
+  def handle_call({:transition, %{from: from, to: to}}, _, state)
       when from === state.tram_state do
     new_state = %{tram_state: to}
     {:reply, {:ok, new_state}, new_state}
   end
 
   @impl true
-  def handle_call({:transition, %{from: from, to: to}}, {pid, _ref}, state)
+  def handle_call({:transition, %{to: to}}, _, state)
       when to === state.tram_state do
     {:reply, {:error, "tram is already in required state #{state.tram_state}"}, state}
   end
