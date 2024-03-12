@@ -106,8 +106,7 @@ defmodule TramFsm do
   end
 
   @impl true
-  def handle_call({:transition, %{to: to}}, _, state)
-      when to === state.tram_state do
+  def handle_call({:transition, %{to: to}}, _, %{tram_state: to} = state) do
     {:reply, {:error, "tram is already in required state #{state.tram_state}"}, state}
   end
 end
