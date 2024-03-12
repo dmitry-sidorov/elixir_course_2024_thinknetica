@@ -100,8 +100,7 @@ defmodule TramFsm do
   end
 
   @impl true
-  def handle_call({:transition, %{from: from, to: to}}, _, state)
-      when from === state.tram_state do
+  def handle_call({:transition, %{from: from, to: to}}, _, %{tram_state: from} = state) do
     new_state = %{tram_state: to}
     {:reply, {:ok, new_state}, new_state}
   end
