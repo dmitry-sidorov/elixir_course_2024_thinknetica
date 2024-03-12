@@ -69,7 +69,10 @@ defmodule TramFsm do
   defp get_available_transitions(%{tram_state: current_state}) do
     @transition_scheme
     |> Map.to_list()
-    |> Enum.filter(fn {_transition, %{from: from}} -> from == current_state end)
+    |> Enum.filter(fn 
+      {_transition, %{from: ^current_state}} -> true
+      _ -> false
+     end)
     |> Enum.map(fn {transition, _} -> transition end)
   end
 
