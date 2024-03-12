@@ -78,7 +78,7 @@ defmodule TramFsm do
 
   defp get_info(state) do
     %{
-      current_state: state[:tram_state],
+      current_state: state.tram_state,
       available_transitions: get_available_transitions(state)
     }
   end
