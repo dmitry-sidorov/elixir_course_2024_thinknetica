@@ -2,14 +2,13 @@ defmodule TramFsmTest do
   use ExUnit.Case
   doctest TramFsm
 
-  transitions = TramFsm.transition_scheme() |> Map.to_list()
+  transitions = TramFsm.transition_scheme()
+  all_transitions = transitions |> Enum.map(fn %{name: name} -> name end) |> Enum.uniq()
 
-  for {transition_name, transition_data} <- transitions do
-    @tag transition_name: transition_name
-    @tag transition_data: transition_data
-    test "Test transition #{transition_name}", %{
-      transition_name: transition_name,
-      transition_data: %{from: from, to: to}
+  for transition <- transitions do
+    @tag transition: transition
+    test "Test transition #{transition.from} -> #{transition.to}", %{
+      transition: %Transition{name: transition_name, from: from, to: to}
     } do
       {:ok, pid} = TramFsm.start_link(%{tram_state: from})
       {:info, %{current_state: current_state}} = TramFsm.info(pid)
@@ -21,22 +20,26 @@ defmodule TramFsmTest do
     end
   end
 
-  for {transition_name, transition_data} <- transitions do
-    @tag transition_name: transition_name
-    @tag transition_data: transition_data
-    test "Test same transition applied twice #{transition_name}", %{
-      transition_name: transition_name,
-      transition_data: %{to: to}
+  for transition <- transitions do
+    @tag transition: transition
+    @tag all_transitions: all_transitions
+    test "Test unapplicable transition #{transition.from} -> #{transition.to}", %{
+      transition: %Transition{from: from},
+      all_transitions: all_transitions
     } do
-      {:ok, pid} = TramFsm.start_link(%{tram_state: to})
-      {:info, %{current_state: current_state}} = TramFsm.info(pid)
-      assert current_state == to, "should start from current state"
+      {:ok, pid} = TramFsm.start_link(%{tram_state: from})
+      {:info, %{available_transitions: available_transitions}} = TramFsm.info(pid)
+      unapplicable_transitions = all_transitions -- available_transitions
 
-      {:error, warning} = TramFsm.transition(pid, transition_name)
-      {:info, %{current_state: new_state}} = TramFsm.info(pid)
+      for unapplicable_transition <- unapplicable_transitions do
+        {:error, error_message, _info} =
+          TramFsm.transition(pid, unapplicable_transition)
 
-      assert new_state == to, "should not change state"
-      assert warning == "tram is already in required state #{to}"
+        {:info, %{current_state: current_state}} = TramFsm.info(pid)
+
+        assert current_state == from
+        assert error_message == "transition #{unapplicable_transition} is unapplicable"
+      end
     end
   end
 
@@ -48,17 +51,15 @@ defmodule TramFsmTest do
     @tag current_transition: current_transition
     test "Test invalid transition #{invalid_transition}", %{
       invalid_transition: invalid_transition,
-      current_transition: current_transition
+      current_transition: %Transition{name: transition_name, from: from}
     } do
-      {transition, %{from: from}} = current_transition
       {:ok, pid} = TramFsm.start_link(%{tram_state: from})
 
-      {:error, message, info} = TramFsm.transition(pid, invalid_transition)
+      {:error, message, _info} = TramFsm.transition(pid, invalid_transition)
       {:info, %{current_state: new_state}} = TramFsm.info(pid)
 
-      assert new_state == from, "should not change state"
-      assert message == "transition doesn't exist"
-      assert info == %{current_state: from, available_transitions: [transition]}
+      assert new_state == from, "transition #{transition_name} should not change state"
+      assert message == "transition #{invalid_transition} doesn't exist"
     end
   end
 end
