@@ -13,10 +13,10 @@ flowchart TD
   On_station ---> |move| Moving
   On_station ---> |doors| Onboarding_passengers
   Onboarding_passengers ---> |doors| On_station
-  Moving ---> |blocked| Stopped
-  Stopped ---> |unblocked| Moving 
-  Moving ---> |red light| Stopped
-  Stopped ---> |green light| Moving
+  Moving ---> |block| Blocked
+  Blocked ---> |block| Moving 
+  Moving ---> |traffic light| On_red_light_stop
+  On_red_light_stop ---> |traffic light| Moving
   Moving ---> |bang| On_accident
   On_accident ---> |doors| Rescue_passengers
   Rescue_passengers --->|doors| On_accident
