@@ -1,39 +1,57 @@
 defmodule TramFsm do
   use GenServer
 
-  @transition_scheme %{
-    "start_the_route" => %{from: :depot, to: :move_to_station},
-    "finish_the_route" => %{from: :move_to_station, to: :depot},
-    "arrive_to_station" => %{from: :move_to_station, to: :stop_on_station},
-    "moving_to_next_station" => %{from: :stop_on_station, to: :move_to_station},
-    "open_the_doors" => %{from: :stop_on_station, to: :doors_opened},
-    "close_the_doors" => %{from: :doors_opened, to: :stop_on_station},
-    "start_onboarding_passengers" => %{from: :doors_opened, to: :onboarding_passengers},
-    "stop_onboarding_passengers" => %{from: :onboarding_passengers, to: :doors_opened},
-    "railway_blocked" => %{from: :move_to_station, to: :stop_by_railway_block},
-    "continue_the_route" => %{from: :stop_by_railway_block, to: :move_to_station},
-    "traffic_light_red" => %{from: :move_to_station, to: :stop_by_traffic_light},
-    "traffic_light_green" => %{from: :stop_by_traffic_light, to: :move_to_station},
-    "unexpected_accident_happened" => %{from: :move_to_station, to: :stop_by_accident},
-    "open_the_doors_emergency" => %{
-      from: :stop_by_accident,
-      to: :emergency_doors_opening
-    },
-    "start_rescue_passengers" => %{
-      from: :emergency_doors_opening,
-      to: :rescue_passengers
-    },
-    "stop_rescue_passengers" => %{
-      from: :rescue_passengers,
-      to: :emergency_doors_opening
-    },
-    "close_the_doors_emergency" => %{
-      from: :emergency_doors_opening,
-      to: :stop_by_accident
-    },
-    "move_to_service_station" => %{from: :stop_by_accident, to: :service},
-    "back_to_depot" => %{from: :service, to: :depot}
-  }
+  @transition_scheme [
+    %Transition{name: :move, from: :in_depot, to: :moving},
+    %Transition{name: :move, from: :moving, to: :in_depot},
+    %Transition{name: :stop, from: :moving, to: :on_station},
+    %Transition{name: :move, from: :on_station, to: :moving},
+    %Transition{name: :doors, from: :on_station, to: :onboarding_passengers},
+    %Transition{name: :doors, from: :onboarding_passengers, to: :on_station},
+    %Transition{name: :block, from: :moving, to: :blocked},
+    %Transition{name: :block, from: :blocked, to: :moving},
+    %Transition{name: :traffic_light, from: :moving, to: :on_red_light_stop},
+    %Transition{name: :traffic_light, from: :on_red_light_stop, to: :moving},
+    %Transition{name: :bang, from: :moving, to: :on_accident},
+    %Transition{name: :doors, from: :on_accident, to: :rescue_passengers},
+    %Transition{name: :doors, from: :rescue_passengers, to: :on_accident},
+    %Transition{name: :move, from: :on_accident, to: :moving},
+    %Transition{name: :repair, from: :moving, to: :on_service},
+    %Transition{name: :move, from: :on_service, to: :in_depot}
+  ]
+
+  # @transition_scheme %{
+  #   "move" => [
+  #     %{from: :in_depot, to: :moving},
+  #     %{from: :moving, to: :in_depot},
+  #     %{from: :on_station, to: :moving},
+  #     %{from: :on_accident, to: :moving},
+  #     %{from: :on_service, to: :in_depot}
+  #   ],
+  #   "stop" => [
+  #     %{from: :moving, to: :on_station}
+  #   ],
+  #   "doors" => [
+  #     %{from: :on_station, to: :onboarding_passengers},
+  #     %{from: :onboarding_passengers, to: :on_station},
+  #     %{from: :on_accident, to: :rescue_passengers},
+  #     %{from: :rescue_passengers, to: :on_accident}
+  #   ],
+  #   "block" => [
+  #     %{from: :moving, to: :blocked},
+  #     %{from: :blocked, to: :moving}
+  #   ],
+  #   "traffic_light" => [
+  #     %{from: :moving, to: :on_red_light_stop},
+  #     %{from: :on_red_light_stop, to: :moving}
+  #   ],
+  #   "bang" => [
+  #     %{from: :moving, to: :on_accident}
+  #   ],
+  #   "repair" => [
+  #     %{from: :moving, to: :on_service}
+  #   ]
+  # }
 
   @moduledoc """
   Documentation for `TramFsm`.
@@ -45,11 +63,11 @@ defmodule TramFsm do
   ## Examples
       iex> {:ok, pid} = TramFsm.start_link()
       iex> TramFsm.info(pid)
-      {:info, %{current_state: :depot, available_transitions: ["start_the_route"]}}
-      iex> TramFsm.transition(pid, "start_the_route")
+      {:info, %{current_state: :in_depot, available_transitions: ["start_the_route"]}}
+      iex> TramFsm.transition(pid, "move")
       {:ok, %{tram_state: :move_to_station}}
   """
-  def start_link(default \\ %{tram_state: :depot}) do
+  def start_link(default \\ %{tram_state: :in_depot}) do
     GenServer.start_link(__MODULE__, default)
   end
 
@@ -66,14 +84,16 @@ defmodule TramFsm do
     @transition_scheme
   end
 
+  @spec get_available_transitions(%{tram_state: atom()}) :: [atom()]
   defp get_available_transitions(%{tram_state: current_state}) do
     @transition_scheme
-    |> Map.to_list()
-    |> Enum.filter(fn 
-      {_transition, %{from: ^current_state}} -> true
+    |> IO.inspect()
+    |> Enum.filter(fn
+      %Transition{from: ^current_state} -> true
       _ -> false
-     end)
-    |> Enum.map(fn {transition, _} -> transition end)
+    end)
+    |> IO.inspect()
+    |> Enum.map(fn %Transition{name: name} -> name end)
   end
 
   defp get_info(state) do
@@ -83,15 +103,31 @@ defmodule TramFsm do
     }
   end
 
-  def transition(pid, transition) do
-    case Map.fetch(@transition_scheme, transition) do
-      {:ok, transition_data} ->
-        GenServer.call(pid, {:transition, transition_data})
+  defp apply_transition(pid, [], transition_name) do
+    {:info, info} = GenServer.call(pid, :info)
+    {:error, "transition #{transition_name} doesn't exist", info}
+  end
 
-      :error ->
-        {:info, info} = GenServer.call(pid, :info)
-        {:error, "transition doesn't exist", info}
-    end
+  defp apply_transition(pid, possible_transitions, transition_name) do
+    possible_transitions |> Enum.find(%{name: transition_name})
+  end
+
+  def transition(pid, transition_name) do
+    possible_transitions =
+      Enum.filter(@transition_scheme, fn %Transition{name: name} ->
+        name == transition_name
+      end)
+
+    apply_transition(pid, possible_transitions, transition_name)
+
+    # case length(possible_transitions) do
+    #   {:ok, transition_data} ->
+    #     GenServer.call(pid, {:transition, transition_data})
+
+    #   :error ->
+    #     {:info, info} = GenServer.call(pid, :info)
+    #     {:error, "transition doesn't exist", info}
+    # end
   end
 
   @impl true
