@@ -8,15 +8,13 @@ The project is the implementation of tram [finite state machine](https://en.wiki
 ```renderAs=mermaid
 flowchart TD
   In_depot ---> |move| Moving
-  Moving ---> |move| In_depot
-  Moving ---> |stop| On_station
-  On_station ---> |move| Moving
-  On_station ---> |doors| Onboarding_passengers
-  Onboarding_passengers ---> |doors| On_station
+  Moving ---> |stop| In_depot
+  Moving ---> |stop| Onboarding
+  Onboarding ---> |move| Moving
   Moving ---> |block| Blocked
-  Blocked ---> |block| Moving 
-  Moving ---> |traffic light| On_red_light_stop
-  On_red_light_stop ---> |traffic light| Moving
+  Blocked ---> |block| Moving
+  Moving ---> |stop| On_red_light_stop
+  On_red_light_stop ---> |move| Moving
   Moving ---> |bang| On_accident
   On_accident ---> |doors| Rescue_passengers
   Rescue_passengers --->|doors| On_accident
