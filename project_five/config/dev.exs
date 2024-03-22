@@ -2,8 +2,8 @@ import Config
 
 # Configure your database
 config :project_five, ProjectFive.Repo,
-  username: "postgres",
-  password: "postgres",
+  username: "project_five",
+  password: "project_five",
   hostname: "localhost",
   database: "project_five_dev",
   stacktrace: true,
