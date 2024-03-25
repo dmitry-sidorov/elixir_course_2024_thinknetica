@@ -5,7 +5,7 @@ defmodule ProjectFive.Student do
   schema "students" do
     field(:first_name, :string)
     field(:last_name, :string)
-    has_many(:courses, through: :enrolments)
+    has_many(:enrolments, ProjectFive.Enrolment)
 
     timestamps()
   end
