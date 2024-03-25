@@ -3,8 +3,9 @@ defmodule ProjectFive.Student do
   import Ecto.Changeset
 
   schema "students" do
-    field :first_name, :string
-    field :last_name, :string
+    field(:first_name, :string)
+    field(:last_name, :string)
+    has_many(:courses, through: :enrolments)
 
     timestamps()
   end
