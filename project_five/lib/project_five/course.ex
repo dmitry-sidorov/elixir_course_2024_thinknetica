@@ -2,9 +2,11 @@ defmodule ProjectFive.Course do
   use Ecto.Schema
   import Ecto.Changeset
 
+  alias ProjectFive.{Enrolment, Student}
+
   schema "courses" do
     field(:title, :string)
-    has_many(:enrolments, ProjectFive.Enrolment)
+    many_to_many(:students, Student, join_through: Enrolment)
 
     timestamps()
   end
