@@ -19,6 +19,7 @@ defmodule ProjectFive.Enrolements do
   """
   def list_enrolments do
     Repo.all(Enrolment)
+    |> Repo.preload([:student, :course])
   end
 
   @doc """
@@ -35,7 +36,9 @@ defmodule ProjectFive.Enrolements do
       ** (Ecto.NoResultsError)
 
   """
-  def get_enrolment!(id), do: Repo.get!(Enrolment, id)
+  def get_enrolment!(id) do
+    Repo.get!(Enrolment, id)
+  end
 
   @doc """
   Creates a enrolment.

@@ -1,61 +1,65 @@
 defmodule ProjectFive.EnrolementsTest do
   use ProjectFive.DataCase
 
-  alias ProjectFive.Enrolements
+  alias Ecto.Repo
+  alias ProjectFive.{Courses, Enrolements, Students}
+  alias ProjectFive.Courses.Course
+  alias ProjectFive.Students.Student
 
-  describe "enrolments" do
-    alias ProjectFive.Enrolements.Enrolment
+  @students [
+    %Student{first_name: "Jose", last_name: "Valim"},
+    %Student{first_name: "Steve", last_name: "McConnel"},
+    %Student{first_name: "David", last_name: "Hanson"},
+    %Student{first_name: "Yukihiro", last_name: "Matsumoto"},
+    %Student{first_name: "Joe", last_name: "Armstrong"}
+  ]
 
-    import ProjectFive.EnrolementsFixtures
+  @courses [
+    %Course{title: "Elixir", description: "Learn Elixir, Ecto, Phoenix"},
+    %Course{title: "Erlang", description: "Learn Erlang, GenServer, Actor model"},
+    %Course{title: "Java", description: "Learn Java, Spring, PostgresQL"},
+    %Course{title: "Ruby", description: "Learn Ruby, Ruby on Rails, ActiveRecord"}
+  ]
 
-    @invalid_attrs %{year: nil, grade: nil}
+  def seed_entities do
+    seed_students()
+    seed_courses()
+  end
 
-    test "list_enrolments/0 returns all enrolments" do
-      enrolment = enrolment_fixture()
-      assert Enrolements.list_enrolments() == [enrolment]
+  defp seed_students do
+    for student <- @students do
+      student
+      |> Map.from_struct()
+      |> Students.create_student()
     end
+  end
 
-    test "get_enrolment!/1 returns the enrolment with given id" do
-      enrolment = enrolment_fixture()
-      assert Enrolements.get_enrolment!(enrolment.id) == enrolment
+  defp seed_courses do
+    for course <- @courses do
+      course
+      |> Map.from_struct()
+      |> Courses.create_course()
     end
+  end
 
-    test "create_enrolment/1 with valid data creates a enrolment" do
-      valid_attrs = %{year: 42, grade: 120.5}
+  setup do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(ProjectFive.Repo)
+    seed_entities()
+  end
 
-      assert {:ok, %Enrolment{} = enrolment} = Enrolements.create_enrolment(valid_attrs)
-      assert enrolment.year == 42
-      assert enrolment.grade == 120.5
-    end
+  for num <- 0..3 do
+    @tag num: num
+    test "add_student_#{num}", %{num: num} do
+      course = Courses.list_courses() |> Enum.at(num)
+      student = Students.list_students() |> Enum.at(num)
+      Courses.add_student(course, student)
 
-    test "create_enrolment/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Enrolements.create_enrolment(@invalid_attrs)
-    end
+      {:ok, students_from_enrolment} =
+        Courses.list_courses()
+        |> Enum.at(num)
+        |> Map.fetch(:students)
 
-    test "update_enrolment/2 with valid data updates the enrolment" do
-      enrolment = enrolment_fixture()
-      update_attrs = %{year: 43, grade: 456.7}
-
-      assert {:ok, %Enrolment{} = enrolment} = Enrolements.update_enrolment(enrolment, update_attrs)
-      assert enrolment.year == 43
-      assert enrolment.grade == 456.7
-    end
-
-    test "update_enrolment/2 with invalid data returns error changeset" do
-      enrolment = enrolment_fixture()
-      assert {:error, %Ecto.Changeset{}} = Enrolements.update_enrolment(enrolment, @invalid_attrs)
-      assert enrolment == Enrolements.get_enrolment!(enrolment.id)
-    end
-
-    test "delete_enrolment/1 deletes the enrolment" do
-      enrolment = enrolment_fixture()
-      assert {:ok, %Enrolment{}} = Enrolements.delete_enrolment(enrolment)
-      assert_raise Ecto.NoResultsError, fn -> Enrolements.get_enrolment!(enrolment.id) end
-    end
-
-    test "change_enrolment/1 returns a enrolment changeset" do
-      enrolment = enrolment_fixture()
-      assert %Ecto.Changeset{} = Enrolements.change_enrolment(enrolment)
+      assert students_from_enrolment |> Enum.member?(student)
     end
   end
 end

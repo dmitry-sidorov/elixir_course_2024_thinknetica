@@ -4,6 +4,7 @@ defmodule ProjectFive.Courses do
   """
 
   import Ecto.Query, warn: false
+  alias ProjectFive.Students.Student
   alias ProjectFive.Repo
 
   alias ProjectFive.Courses.Course
@@ -18,7 +19,7 @@ defmodule ProjectFive.Courses do
 
   """
   def list_courses do
-    Repo.all(Course)
+    Repo.all(Course) |> Repo.preload([:students])
   end
 
   @doc """
@@ -53,6 +54,26 @@ defmodule ProjectFive.Courses do
     %Course{}
     |> Course.changeset(attrs)
     |> Repo.insert()
+  end
+
+  @doc """
+  Adds a student to the course.
+
+  ## Examples
+
+      iex> add_student(%{field: value})
+      {:ok, %Course{}}
+
+      iex> create_course(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def add_student(%Course{} = course, %Student{} = student) do
+    course
+    |> Repo.preload(:students)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:students, [student])
+    |> Repo.update()
   end
 
   @doc """
