@@ -11,7 +11,11 @@ defmodule Lister do
   defimpl Listable, for: BitString do
     @spec show(binary()) :: list()
     def show(term) do
-      String.to_charlist(term)
+      if is_nil(term) do
+        [nil]
+      else
+        String.to_charlist(term)
+      end
     end
   end
 
@@ -44,7 +48,7 @@ defmodule Lister do
   defimpl Listable, for: Atom do
     @spec show(atom()) :: list()
     def show(term) do
-      term |> Atom.to_string() |> String.to_charlist()
+      [term]
     end
   end
 
