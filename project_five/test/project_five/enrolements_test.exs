@@ -8,7 +8,6 @@ defmodule ProjectFive.EnrolementsTest do
   @students [
     %Student{first_name: "Jose", last_name: "Valim"},
     %Student{first_name: "Steve", last_name: "McConnel"},
-    %Student{first_name: "David", last_name: "Hanson"},
     %Student{first_name: "Yukihiro", last_name: "Matsumoto"},
     %Student{first_name: "Joe", last_name: "Armstrong"}
   ]
@@ -74,5 +73,37 @@ defmodule ProjectFive.EnrolementsTest do
                course_id == course.id and student_id == student.id
              end)
     end
+  end
+
+  test "should delete student or course with corresponding enrolments" do
+    students = Students.list_students()
+    courses = Courses.list_courses()
+
+    for num <- 0..3 do
+      course = Enum.at(courses, num)
+      student = Enum.at(students, num)
+      Courses.add_student(course, student)
+
+      case num do
+        0 -> Courses.add_student(course, Enum.at(students, 1))
+        1 -> Students.add_course(student, Enum.at(courses, 0))
+        _ -> true
+      end
+    end
+
+    enrolments_before_delete = Enrolements.list_enrolments()
+    course_to_delete = Enum.at(courses, 0)
+    student_to_delete = Enum.at(students, 3)
+
+    Courses.delete_course(course_to_delete)
+    Students.delete_student(student_to_delete)
+
+    assert Enrolements.list_enrolments() ==
+             Enum.reject(enrolments_before_delete, fn %{course: %{id: course_id}} ->
+               course_id == course_to_delete.id
+             end)
+             |> Enum.reject(fn %{student: %{id: student_id}} ->
+               student_id == student_to_delete.id
+             end)
   end
 end
