@@ -1,7 +1,6 @@
 defmodule ProjectFive.EnrolementsTest do
   use ProjectFive.DataCase
 
-  alias Ecto.Repo
   alias ProjectFive.{Courses, Enrolements, Students}
   alias ProjectFive.Courses.Course
   alias ProjectFive.Students.Student
@@ -49,17 +48,16 @@ defmodule ProjectFive.EnrolementsTest do
 
   for num <- 0..3 do
     @tag num: num
-    test "add_student_#{num}", %{num: num} do
+    test "should add student to the course #{num}", %{num: num} do
       course = Courses.list_courses() |> Enum.at(num)
       student = Students.list_students() |> Enum.at(num)
       Courses.add_student(course, student)
+      enrolments = Enrolements.list_enrolments()
 
-      {:ok, students_from_enrolment} =
-        Courses.list_courses()
-        |> Enum.at(num)
-        |> Map.fetch(:students)
-
-      assert students_from_enrolment |> Enum.member?(student)
+      assert enrolments
+             |> Enum.any?(fn %{course: %{id: course_id}, student: %{id: student_id}} ->
+               course_id == course.id and student_id == student.id
+             end)
     end
   end
 end
