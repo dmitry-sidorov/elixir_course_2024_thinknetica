@@ -19,7 +19,8 @@ defmodule ProjectFive.Courses do
 
   """
   def list_courses do
-    Repo.all(Course) |> Repo.preload([:students])
+    Repo.all(Course)
+    |> Repo.preload([:students])
   end
 
   @doc """

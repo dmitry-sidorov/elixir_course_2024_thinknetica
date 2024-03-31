@@ -60,4 +60,19 @@ defmodule ProjectFive.EnrolementsTest do
              end)
     end
   end
+
+  for num <- 0..3 do
+    @tag num: num
+    test "should add course to selected student #{num}", %{num: num} do
+      student = Students.list_students() |> Enum.at(num)
+      course = Courses.list_courses() |> Enum.at(num)
+      Students.add_course(student, course)
+      enrolments = Enrolements.list_enrolments()
+
+      assert enrolments
+             |> Enum.any?(fn %{course: %{id: course_id}, student: %{id: student_id}} ->
+               course_id == course.id and student_id == student.id
+             end)
+    end
+  end
 end

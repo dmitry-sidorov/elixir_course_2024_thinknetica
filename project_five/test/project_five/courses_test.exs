@@ -11,7 +11,7 @@ defmodule ProjectFive.CoursesTest do
     @invalid_attrs %{description: nil, title: nil}
 
     test "list_courses/0 returns all courses" do
-      course = course_fixture()
+      course = course_fixture() |> Repo.preload([:students])
       assert Courses.list_courses() == [course]
     end
 

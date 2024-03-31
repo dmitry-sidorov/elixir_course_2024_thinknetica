@@ -11,7 +11,7 @@ defmodule ProjectFive.StudentsTest do
     @invalid_attrs %{first_name: nil, last_name: nil}
 
     test "list_students/0 returns all students" do
-      student = student_fixture()
+      student = student_fixture() |> Repo.preload([:courses])
       assert Students.list_students() == [student]
     end
 
