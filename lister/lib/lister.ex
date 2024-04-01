@@ -44,7 +44,7 @@ defmodule Lister do
   defimpl Listable, for: Tuple do
     @spec show(tuple()) :: list(any())
     def show(term) do
-      term |> Tuple.to_list()
+      term |> @for.to_list()
     end
   end
 
