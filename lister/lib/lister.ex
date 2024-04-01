@@ -1,6 +1,7 @@
 defmodule Lister do
   @moduledoc """
   Documentation for `Lister`.
+
   """
 
   defprotocol Listable do
@@ -8,14 +9,10 @@ defmodule Lister do
     def show(term)
   end
 
-  defimpl Listable, for: BitString do
+  defimpl Listable, for: [String, BitString] do
     @spec show(binary()) :: list()
     def show(term) do
-      if is_nil(term) do
-        [nil]
-      else
-        String.to_charlist(term)
-      end
+      term |> String.to_charlist()
     end
   end
 
@@ -27,31 +24,40 @@ defmodule Lister do
   end
 
   defimpl Listable, for: [Float, Integer] do
-    @spec show(integer()) :: [...]
+    @spec show(integer()) :: list(integer() | float())
     def show(term) do
       [term]
     end
   end
 
   defimpl Listable, for: Map do
+    @spec show(map()) :: list(any())
     def show(term) do
       term |> Map.to_list()
     end
   end
 
   defimpl Listable, for: Tuple do
+    @spec show(tuple()) :: list(any())
     def show(term) do
       term |> Tuple.to_list()
     end
   end
 
   defimpl Listable, for: Atom do
-    @spec show(atom()) :: list()
+    @spec show(atom()) :: list(atom())
     def show(term) do
       [term]
     end
   end
 
+  @doc """
+  Converts any given value to list.
+
+  ## Examples
+      iex> Lister.show(%{hello: "map", whats: "up"})
+      [hello: "map", whats: "up"]
+  """
   def show(term) do
     Listable.show(term)
   end
