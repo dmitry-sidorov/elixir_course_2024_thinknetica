@@ -5,7 +5,7 @@ defmodule Lister do
   """
 
   defprotocol Listable do
-    @spec show(any()) :: any()
+    @spec show(any()) :: list()
     @fallback_to_any true
     def show(term)
   end
