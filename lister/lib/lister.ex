@@ -6,6 +6,7 @@ defmodule Lister do
 
   defprotocol Listable do
     @spec show(any()) :: any()
+    @fallback_to_any true
     def show(term)
   end
 
@@ -30,7 +31,10 @@ defmodule Lister do
     end
   end
 
-  defimpl Listable, for: Map do
+  @doc """
+  Any type handles custom user structs.
+  """
+  defimpl Listable, for: [Map, Any] do
     @spec show(map()) :: list(any())
     def show(term) do
       term |> Map.to_list()

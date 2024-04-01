@@ -118,4 +118,14 @@ defmodule ListerTest do
       end
     end
   end
+
+  defmodule TestStruct do
+    defstruct [:name, :some]
+  end
+
+  test "should work for custom Struct" do
+    user_struct = %TestStruct{name: "John", some: "Awesome 42"}
+
+    assert Lister.show(user_struct) == Map.to_list(user_struct)
+  end
 end
