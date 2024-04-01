@@ -12,7 +12,6 @@ defmodule ListerTest do
     for test_count <- 1..@test_count do
       @tag test_count: test_count
       @tag test_cases: test_cases
-      @tag :skip
       test "for #{test_count} test case", %{test_count: test_count, test_cases: test_cases} do
         test_string = Enum.at(test_cases, test_count)
 
@@ -30,7 +29,6 @@ defmodule ListerTest do
     for test_count <- 1..@test_count do
       @tag test_count: test_count
       @tag test_cases: test_cases
-      @tag :skip
       test "for #{test_count} test case", %{test_count: test_count, test_cases: test_cases} do
         test_list = Enum.at(test_cases, test_count)
 
@@ -48,7 +46,6 @@ defmodule ListerTest do
     for test_count <- 1..@test_count do
       @tag test_count: test_count
       @tag test_cases: test_cases
-      @tag :skip
       test "for #{test_count} test case", %{test_count: test_count, test_cases: test_cases} do
         test_int = Enum.at(test_cases, test_count)
         assert Lister.show(test_int) == [test_int]
@@ -63,7 +60,6 @@ defmodule ListerTest do
     for test_count <- 1..@test_count do
       @tag test_count: test_count
       @tag test_cases: test_cases
-      @tag :skip
       test "for #{test_count} test case", %{test_count: test_count, test_cases: test_cases} do
         test_float = Enum.at(test_cases, test_count)
         assert Lister.show(test_float) == [test_float]
@@ -79,7 +75,6 @@ defmodule ListerTest do
     for test_count <- 1..@test_count do
       @tag test_count: test_count
       @tag test_cases: test_cases
-      @tag :skip
       test "for #{test_count} test case", %{test_count: test_count, test_cases: test_cases} do
         test_map = Enum.at(test_cases, test_count)
 
@@ -98,7 +93,6 @@ defmodule ListerTest do
     for test_count <- 1..@test_count do
       @tag test_count: test_count
       @tag test_cases: test_cases
-      @tag :skip
       test "for #{test_count} test case", %{test_count: test_count, test_cases: test_cases} do
         test_tuple = Enum.at(test_cases, test_count)
 
@@ -117,7 +111,6 @@ defmodule ListerTest do
     for test_count <- 1..@test_count do
       @tag test_count: test_count
       @tag test_cases: test_cases
-      @tag :skip
       test "for #{test_count} test case", %{test_count: test_count, test_cases: test_cases} do
         test_atom = Enum.at(test_cases, test_count)
 
