@@ -18,7 +18,8 @@ defmodule ProjectFive.Enrolements do
 
   """
   def list_enrolments do
-    Repo.all(Enrolment)
+    Enrolment
+    |> Repo.all()
     |> Repo.preload([:student, :course])
   end
 
