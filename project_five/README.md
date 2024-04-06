@@ -8,3 +8,7 @@ To start your Phoenix server:
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
 Now you can visit [`localhost:5544`](http://localhost:5544) from your browser.
+
+# Homework 06
+
+Ecto. Add many-to-many relation
