@@ -1,11 +1,9 @@
 defmodule ProjectFive.StudentsTest do
   use ProjectFive.DataCase
-
   alias ProjectFive.Students
+  alias ProjectFive.Students.Student
 
   describe "students" do
-    alias ProjectFive.Students.Student
-
     import ProjectFive.StudentsFixtures
 
     @invalid_attrs %{first_name: nil, last_name: nil}

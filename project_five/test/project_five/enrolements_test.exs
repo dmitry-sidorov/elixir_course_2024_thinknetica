@@ -106,4 +106,8 @@ defmodule ProjectFive.EnrolementsTest do
                student_id == student_to_delete.id
              end)
   end
+
+  test "delete enrolment" do
+    assert Enrolements.delete_enrolment(%Student{}, %Course{}) == nil
+  end
 end
