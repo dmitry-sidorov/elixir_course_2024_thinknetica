@@ -69,4 +69,10 @@ defmodule ListerTest do
       assert Lister.show(test_struct) == Map.to_list(test_struct)
     end
   end
+
+  property "should implement Listable protocol for binary" do
+    check all(test_binary <- binary()) do
+      assert Lister.show(test_binary) == :binary.bin_to_list(test_binary)
+    end
+  end
 end

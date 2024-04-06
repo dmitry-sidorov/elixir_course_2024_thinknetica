@@ -10,7 +10,7 @@ defmodule Lister do
     def show(term)
   end
 
-  defimpl Listable, for: [String, BitString] do
+  defimpl Listable, for: String do
     @spec show(binary()) :: list()
     def show(term) do
       term |> String.to_charlist()
@@ -34,8 +34,15 @@ defmodule Lister do
   # Any type handles custom user structs.
   defimpl Listable, for: [Map, Any] do
     @spec show(map()) :: list({any(), any()})
-    def show(term) do
+    def show(term) when is_map(term) do
       term |> Map.to_list()
+    end
+  end
+
+  defimpl Listable, for: BitString do
+    @spec show(binary()) :: binary()
+    def show(term) when is_binary(term) do
+      term |> :binary.bin_to_list()
     end
   end
 
