@@ -31,9 +31,7 @@ defmodule Lister do
     end
   end
 
-  @doc """
-  Any type handles custom user structs.
-  """
+  # Any type handles custom user structs.
   defimpl Listable, for: [Map, Any] do
     @spec show(map()) :: list({any(), any()})
     def show(term) do
