@@ -6,7 +6,7 @@ defmodule ProjectFive.Students do
   import Ecto.Query, warn: false
   alias ProjectFive.Repo
 
-  alias ProjectFive.{Courses.Course, Students.Student}
+  alias ProjectFive.Students.Student
 
   @doc """
   Returns the list of students.

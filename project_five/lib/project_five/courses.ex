@@ -4,7 +4,6 @@ defmodule ProjectFive.Courses do
   """
 
   import Ecto.Query, warn: false
-  alias ProjectFive.Students.Student
   alias ProjectFive.Repo
 
   alias ProjectFive.Courses.Course

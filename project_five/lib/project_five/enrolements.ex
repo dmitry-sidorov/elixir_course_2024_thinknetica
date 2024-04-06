@@ -40,9 +40,12 @@ defmodule ProjectFive.Enrolements do
   @doc """
   Deletes a enrolment.
   """
-  def delete_enrolment(%Student{} = student, %Course{} = course) do
-    Enrolments.list_enrolments()
-    # Repo.delete(enrolment)
+  def delete_enrolment(%Course{} = course, %Student{} = student) do
+    list_enrolments()
+    |> Enum.find(fn enrolment ->
+      enrolment.course.id == course.id and enrolment.student.id == student.id
+    end)
+    |> Repo.delete()
   end
 
   @doc """

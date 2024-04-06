@@ -92,7 +92,12 @@ defmodule ProjectFive.EnrolementsTest do
              end)
   end
 
-  # test "delete enrolment" do
-  #   assert Enrolements.delete_enrolment(%Student{}, %Course{}) == nil
-  # end
+  test "should delete enrolment" do
+    [student | _students] = Students.list_students()
+    [course | _courses] = Courses.list_courses()
+    Enrolements.create_enrolment(course, student)
+    Enrolements.delete_enrolment(course, student)
+
+    assert Enrolements.list_enrolments() == []
+  end
 end
