@@ -32,17 +32,6 @@ defmodule ProjectFive.Students do
   end
 
   @doc """
-  Student picks a course.
-  """
-  def add_course(%Student{} = student, %Course{} = course) do
-    student
-    |> Repo.preload(:courses)
-    |> Ecto.Changeset.change()
-    |> Ecto.Changeset.put_assoc(:courses, [course])
-    |> Repo.update()
-  end
-
-  @doc """
   Updates a student.
   """
   def update_student(%Student{} = student, attrs) do

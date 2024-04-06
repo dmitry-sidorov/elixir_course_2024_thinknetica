@@ -20,10 +20,12 @@ defmodule ProjectFive.Enrolements do
   @doc """
   Creates a enrolment.
   """
-  def create_enrolment(attrs \\ %{}) do
-    %Enrolment{}
-    |> Enrolment.changeset(attrs)
-    |> Repo.insert()
+  def create_enrolment(%Course{} = course, %Student{} = student) do
+    course
+    |> Repo.preload(:students)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:students, [student])
+    |> Repo.update()
   end
 
   @doc """
@@ -39,7 +41,7 @@ defmodule ProjectFive.Enrolements do
   Deletes a enrolment.
   """
   def delete_enrolment(%Student{} = student, %Course{} = course) do
-    Enrolements.list_enrolments()
+    Enrolments.list_enrolments()
     # Repo.delete(enrolment)
   end
 

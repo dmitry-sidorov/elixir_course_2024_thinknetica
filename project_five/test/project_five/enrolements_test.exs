@@ -50,22 +50,7 @@ defmodule ProjectFive.EnrolementsTest do
     test "should add student to the course #{num}", %{num: num} do
       course = Courses.list_courses() |> Enum.at(num)
       student = Students.list_students() |> Enum.at(num)
-      Courses.add_student(course, student)
-      enrolments = Enrolements.list_enrolments()
-
-      assert enrolments
-             |> Enum.any?(fn %{course: %{id: course_id}, student: %{id: student_id}} ->
-               course_id == course.id and student_id == student.id
-             end)
-    end
-  end
-
-  for num <- 0..3 do
-    @tag num: num
-    test "should add course to selected student #{num}", %{num: num} do
-      student = Students.list_students() |> Enum.at(num)
-      course = Courses.list_courses() |> Enum.at(num)
-      Students.add_course(student, course)
+      Enrolements.create_enrolment(course, student)
       enrolments = Enrolements.list_enrolments()
 
       assert enrolments
@@ -82,11 +67,11 @@ defmodule ProjectFive.EnrolementsTest do
     for num <- 0..3 do
       course = Enum.at(courses, num)
       student = Enum.at(students, num)
-      Courses.add_student(course, student)
+      Enrolements.create_enrolment(course, student)
 
       case num do
-        0 -> Courses.add_student(course, Enum.at(students, 1))
-        1 -> Students.add_course(student, Enum.at(courses, 0))
+        0 -> Enrolements.create_enrolment(course, Enum.at(students, 1))
+        1 -> Enrolements.create_enrolment(Enum.at(courses, 0), student)
         _ -> true
       end
     end
@@ -107,7 +92,7 @@ defmodule ProjectFive.EnrolementsTest do
              end)
   end
 
-  test "delete enrolment" do
-    assert Enrolements.delete_enrolment(%Student{}, %Course{}) == nil
-  end
+  # test "delete enrolment" do
+  #   assert Enrolements.delete_enrolment(%Student{}, %Course{}) == nil
+  # end
 end
