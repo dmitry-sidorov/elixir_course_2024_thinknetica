@@ -22,7 +22,8 @@ defmodule TramFsm.MixProject do
   defp deps do
     [
       {:stream_data, "~> 0.5", only: :test},
-      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false}
     ]
   end
 end
