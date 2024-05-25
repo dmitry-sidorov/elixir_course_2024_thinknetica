@@ -21,7 +21,7 @@ defmodule TramFsm do
   ]
 
   @type transition() :: %Transition{name: atom(), from: atom(), to: atom()}
-  @type tram_state() :: %{tram_state: atom()}
+  @type tram_state() :: %{required(:tram_state) => atom()}
   @type transition_info() :: %{
           current_state: atom(),
           available_transitions: list(transition())
@@ -45,13 +45,13 @@ defmodule TramFsm do
       iex> TramFsm.transition(pid, :move)
       {:ok, %{tram_state: :in_depot}}
   """
-  @spec start_link(tram_state() | none()) :: {:ok, pid()} | {:error, String.t()}
+  @spec start_link(tram_state()) :: {:ok, pid()} | {:error, String.t()}
   def start_link(default \\ %{tram_state: :in_depot}) do
     GenServer.start_link(__MODULE__, default)
   end
 
   @impl true
-  @spec init(any()) :: {:ok, any()}
+  @spec init(tram_state()) :: {:ok, tram_state()}
   def init(args) do
     {:ok, args}
   end
@@ -133,7 +133,7 @@ defmodule TramFsm do
   @doc """
   Send error for invalid transition application.
   """
-  @spec apply_transition(nil, atom(), tram_state()) ::
+  @spec apply_transition(transition() | nil, atom(), tram_state()) ::
           transition_application_error()
   defp apply_transition(nil, transition_name, state) do
     {:reply, {:error, "transition #{transition_name} is unapplicable", {:info, get_info(state)}},
@@ -143,7 +143,7 @@ defmodule TramFsm do
   @doc """
   Apply valid transition.
   """
-  @spec apply_transition(transition(), atom(), tram_state()) ::
+  @spec apply_transition(transition() | nil, atom(), tram_state()) ::
           transition_application_success()
   defp apply_transition(%Transition{to: to}, _transition_name, _state) do
     new_state = %{tram_state: to}
