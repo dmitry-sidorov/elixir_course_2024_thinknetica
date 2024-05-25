@@ -20,6 +20,17 @@ defmodule TramFsm do
     %Transition{name: :move, from: :on_service, to: :in_depot}
   ]
 
+  @type transition() :: %Transition{name: atom(), from: atom(), to: atom()}
+  @type tram_state() :: %{required(:tram_state) => atom()}
+  @type transition_info() :: %{
+          current_state: atom(),
+          available_transitions: list(transition())
+        }
+  @type transition_application_success() :: {:reply, {:ok, tram_state()}, tram_state()}
+  @type transition_application_error() ::
+          {:ok, tram_state()} | {:error, String.t(), {:info, transition_info()}}
+  @type info() :: {:reply, {:info, transition_info()}, tram_state()}
+
   @moduledoc """
   Documentation for `TramFsm`.
   """
@@ -34,23 +45,34 @@ defmodule TramFsm do
       iex> TramFsm.transition(pid, :move)
       {:ok, %{tram_state: :in_depot}}
   """
+  @spec start_link(tram_state()) :: {:ok, pid()} | {:error, String.t()}
   def start_link(default \\ %{tram_state: :in_depot}) do
     GenServer.start_link(__MODULE__, default)
   end
 
   @impl true
+  @spec init(tram_state()) :: {:ok, tram_state()}
   def init(args) do
     {:ok, args}
   end
 
+  @spec info(pid()) :: info()
   def info(pid) do
     GenServer.call(pid, :info)
   end
 
+  @doc """
+  Returns all transitions in a list
+  """
+  @spec transition_scheme :: list(transition())
   def transition_scheme do
     @transition_scheme
   end
 
+  @doc """
+  Returns possible transitions for current tram state
+  """
+  @spec get_available_transitions(tram_state()) :: list(transition())
   defp get_available_transitions(%{tram_state: current_state}) do
     @transition_scheme
     |> Enum.filter(fn
@@ -60,13 +82,21 @@ defmodule TramFsm do
     |> Enum.map(fn %Transition{name: name} -> name end)
   end
 
-  defp get_info(state) do
+  @doc """
+  Aggregates info for current tram state
+  """
+  @spec get_info(tram_state()) :: transition_info()
+  defp(get_info(state)) do
     %{
       current_state: state.tram_state,
       available_transitions: get_available_transitions(state)
     }
   end
 
+  @doc """
+  Apply transition for selected process.
+  """
+  @spec transition(pid(), atom()) :: {:ok, String.t()} | {:error, String.t()}
   def transition(pid, transition_name) do
     transitions = @transition_scheme |> Enum.map(fn %Transition{name: name} -> name end)
 
@@ -77,11 +107,14 @@ defmodule TramFsm do
   end
 
   @impl true
+  @spec handle_call(:info, any(), tram_state()) :: info()
   def handle_call(:info, _, state) do
     {:reply, {:info, get_info(state)}, state}
   end
 
   @impl true
+  @spec handle_call({:transition, atom()}, any(), tram_state()) ::
+          transition_application_success() | transition_application_error()
   def handle_call({:transition, transition_name}, _, %{tram_state: tram_state} = old_state) do
     transition =
       @transition_scheme
@@ -97,11 +130,21 @@ defmodule TramFsm do
     apply_transition(transition, transition_name, old_state)
   end
 
+  @doc """
+  Send error for invalid transition application.
+  """
+  @spec apply_transition(transition() | nil, atom(), tram_state()) ::
+          transition_application_error()
   defp apply_transition(nil, transition_name, state) do
     {:reply, {:error, "transition #{transition_name} is unapplicable", {:info, get_info(state)}},
      state}
   end
 
+  @doc """
+  Apply valid transition.
+  """
+  @spec apply_transition(transition() | nil, atom(), tram_state()) ::
+          transition_application_success()
   defp apply_transition(%Transition{to: to}, _transition_name, _state) do
     new_state = %{tram_state: to}
     {:reply, {:ok, new_state}, new_state}
