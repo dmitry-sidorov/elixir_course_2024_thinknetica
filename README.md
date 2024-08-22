@@ -36,6 +36,27 @@ flowchart TD
   On_service ---> |move| In_depot
 ```
 
-# Homework 05
+## Homework 05
 
-Phoenix project
+Create new Phoenix project.
+
+## Homework 06
+
+Add Ecto many-to-many relation to Phoenix project.
+
+## Homework 07
+
+Implement Lister protocol for converting any input to list.
+
+## Homework 08
+
+Create new project Phoenix, Bumblebee, Nx and use LLM from Hugging Face for web chatbot.
+https://github.com/dmitry-sidorov/translatex
+
+## Homework 09
+
+Add specs to tram FSM project. Make shure credo and dialyzer checks passed.
+
+## Homework 10
+
+Wrap application to Docker container for release.
